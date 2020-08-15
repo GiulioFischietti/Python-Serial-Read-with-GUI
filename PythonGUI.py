@@ -8,15 +8,38 @@ from random import randint
 from matplotlib.animation import FuncAnimation
 import csv
 
-from tkinter import Tk, RIGHT, BOTH, RAISED, W, E, N, DISABLED, NORMAL, Canvas
+from tkinter import Tk, RIGHT, BOTH, RAISED, W, E, N, DISABLED, NORMAL, Canvas, StringVar, OptionMenu
 
 root = tk.Tk()
 root.title("Real-Time Arduino Uno Serial Data read")
-root.geometry('650x300')
+root.geometry('700x300')
+root.resizable(width=False, height=False)
+
 plt.style.use('fivethirtyeight')
 
-port = 'COM3'
-baud = 9600
+ports = { 'COM1','COM2','COM3','COM4','COM5', 'COM6', 'COM7', 'COM8', 'COM9', 'COM10', 'COM11', 'COM12'}
+tkvar = StringVar(root)
+tkvar.set('COM3') # set the default option
+
+bauds = {'300', '600', '1200', '2400', '4800', '9600', '14400', '19200', '28800', '38400', '57600', '115200'}
+tkvar2 = StringVar(root)
+tkvar2.set('9600') # set the default option
+
+
+labelPort = tk.Label(root, text = 'Port: ' + tkvar.get() + '\n' + tkvar2.get() + ' baud')
+labelPort.grid(row = 6, column = 5, padx = 10, pady = 10)
+
+def updatePort(event):
+    labelPort.config(text = 'Port: ' + tkvar.get() + '\n' + tkvar2.get() + ' baud')
+
+
+baudsMenu = OptionMenu(root, tkvar2, *bauds, command = updatePort)
+baudsMenu.grid(row = 4, column = 6)
+
+portMenu = OptionMenu(root, tkvar, *ports, command = updatePort)
+portMenu.grid(row = 5, column = 6)
+
+
 
 saveOnCsv = tk.IntVar()
 csvCheckbox = tk.Checkbutton(root, text="Save data in csv \n format in real time", variable=saveOnCsv)
@@ -25,6 +48,8 @@ csvCheckbox.grid(row = 6, column = 0, padx = 20, pady = 10)
 w = Canvas(root, width=25, height=25)
 w.grid(row = 6, column = 6)
 circle = w.create_oval(10, 10, 25, 25, outline="#A12", fill="#A12", width=2)
+
+
 
 class Reader:
     def __init__(self, parent):
@@ -55,15 +80,15 @@ class Reader:
         self.label = tk.Label(parent, text="Ready", font="Arial 14", width= 24)
         self.label.grid(row = 0, column = 3, padx=10, pady=10,sticky = N)
         #self.label.after(50, self.readSerial)
-        self.serialPort = serial.Serial(port, baud, timeout=0)
+        
         self.fileCSV = open('Data.csv', mode = 'w+')
         self.writer = csv.writer(self.fileCSV, delimiter = ';')
 
     def readSerial(self):
         """ refresh the content of the label every second """
         # increment the time
-        if(self.serialPort.is_open):   
-            self.data = str(self.serialPort.readline()).replace("'","").replace("b","").replace("\\n", "").replace("\\r", "")
+        if(serialPort.is_open):   
+            self.data = str(serialPort.readline()).replace("'","").replace("b","").replace("\\n", "").replace("\\r", "")
             if(len(self.data.split(';'))==4):
                 print(self.data)
                 w.itemconfig(circle, outline="#1A2", fill="#1A2")
@@ -97,7 +122,7 @@ class Reader:
         plt.cla()
         plt.plot(self.time, self.data1, label='Channel 1')
         plt.plot(self.time, self.data2, label='Channel 2')
-        plt.plot(self.time, self.data3, label='Channel 2')
+        plt.plot(self.time, self.data3, label='Channel 3')
         plt.draw()
         plt.pause(0.001)
         plt.tight_layout()
@@ -108,22 +133,28 @@ class Reader:
 
 
 def start():
+    global serialPort 
+    serialPort = serial.Serial(tkvar.get(), tkvar2.get(), timeout=0)
     if(saveOnCsv.get()):
         reader.fileCSV = open('Data.csv', mode = 'w+')
         reader.writer = csv.writer(reader.fileCSV, delimiter = ';')
-    if(reader.serialPort.is_open is not True):
-        reader.serialPort.open()
+    if(serialPort.is_open is not True):
+        serialPort.open()
+        
     reader.label.configure(text = 'Restarting...')
     w.itemconfig(circle, outline="#DD2",fill="#DD2")
     reader.readSerial()   
+    
     csvCheckbox.config(state=DISABLED)
+    startButton.config(state=DISABLED)
+    stopButton.config(state=NORMAL)
     
 startButton = tk.Button(root, text = 'Start', command = start,padx=10, pady=5)
 startButton.grid(row=0, column=1)
 
 def stop(): 
     w.itemconfig(circle, outline="#A12",  fill="#A12")
-    reader.serialPort.close()
+    # serialPort.close()
     reader.label.configure(text = 'Stopped')
     reader.labelData1.configure(text= '')
     reader.labelData2.configure(text= '')
@@ -132,13 +163,13 @@ def stop():
     csvCheckbox.config(state=NORMAL)
     if(saveOnCsv.get()):
         reader.fileCSV.close()
+    stopButton.config(state=DISABLED)
+    startButton.config(state=NORMAL)
+    serialPort.__del__()
 
 
 stopButton = tk.Button(root, text = 'Stop', command = stop,padx=10, pady=5)
 stopButton.grid(row=0, column=0)
-
-labelPort = tk.Label(root, text = 'Port: ' + port + '\n' + str(baud) + ' baud')
-labelPort.grid(row = 6, column = 5, padx = 10, pady = 10)
 
 
 reader = Reader(root)
