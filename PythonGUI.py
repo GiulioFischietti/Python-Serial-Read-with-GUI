@@ -13,6 +13,7 @@ from tkinter import Tk, Menu, RIGHT, BOTH, RAISED, W, E, N, DISABLED, NORMAL, Ca
 root = tk.Tk()
 root.title("Real-Time Arduino Uno Serial Data read")
 root.geometry('920x420')
+root.configure(bg='white')
 root.resizable(width=False, height=False)
 root.iconbitmap('icon.ico')
 plt.style.use('fivethirtyeight')
@@ -23,14 +24,15 @@ port.set('COM3')
 bauds = tk.StringVar()
 bauds.set('9600')
 
-labelPort = tk.Label(root, text = 'Port: ' + port.get() + '\n' + bauds.get() + ' Bauds')
+labelPort = tk.Label(root, text = 'Port: ' + port.get() + '\n' + bauds.get() + ' Bauds', bg='white')
 labelPort.grid(row = 11, column = 9, padx = 10, pady = 10)
 
 def updatePort():
     labelPort.config(text = 'Port: ' + port.get() + '\n' + bauds.get() + ' Bauds')
 
 
-menubar = Menu(root)
+menubar = Menu(root, background='white')
+menubar.config(bg='white')
 root.config(menu=menubar)
 
 settingsMenu = Menu(menubar, tearoff=False)
@@ -78,10 +80,10 @@ def exitApp():
 fileMenu.add_command(label = 'Exit', command= exitApp)
 
 saveOnCsv = tk.IntVar()
-csvCheckbox = tk.Checkbutton(root, text="Save data in csv \n format in real time", variable=saveOnCsv)
+csvCheckbox = tk.Checkbutton(root, text="Save data in csv \n format in real time", variable=saveOnCsv, bg='white')
 csvCheckbox.grid(row = 11, column = 0, padx = 20, pady = 10)
 
-w = Canvas(root, width=25, height=25)
+w = Canvas(root, width=30, height=30, bg='white', highlightthickness=0)
 w.grid(row = 11, column = 10)
 circle = w.create_oval(10, 10, 25, 25, outline="#A12", fill="#A12", width=2)
 
@@ -114,41 +116,41 @@ class Reader:
         self.message = []
 
     
-        self.labelData1 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData2 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData3 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData4 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData5 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData6 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData7 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData8 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData9 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData10 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData11 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData12 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData13 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData14 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData15 = tk.Label(parent, text="", font="Arial 10",width=4)
-        self.labelData16 = tk.Label(parent, text="", font="Arial 10",width=4)
+        self.labelData1 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData2 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData3 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData4 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData5 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData6 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData7 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData8 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData9 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData10 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData11 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData12 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData13 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData14 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData15 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
+        self.labelData16 = tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white')
 
-        self.labelName1 = tk.Label(parent, text="Cella 1", font="Arial 6",width=5).grid(row = 2, column = 2)
-        self.labelName2 = tk.Label(parent, text="Cella 2", font="Arial 6",width=5).grid(row = 2, column = 3)
-        self.labelName3 = tk.Label(parent, text="Cella 3", font="Arial 6",width=5).grid(row = 2, column = 4)
-        self.labelName4 = tk.Label(parent, text="Cella 4", font="Arial 6",width=5).grid(row = 2, column = 5)
-        self.labelName5 = tk.Label(parent, text="Cella 5", font="Arial 6",width=5).grid(row = 4, column = 2)
-        self.labelName6 = tk.Label(parent, text="Cella 6", font="Arial 6",width=5).grid(row = 4, column = 3)
-        self.labelName7 = tk.Label(parent, text="Cella 7", font="Arial 6",width=5).grid(row = 4, column = 4)
-        self.labelName8 = tk.Label(parent, text="Cella 8", font="Arial 6",width=5).grid(row = 4, column = 5)
-        self.labelName9 = tk.Label(parent, text="Cella 9", font="Arial 6",width=5).grid(row = 6, column = 2)
-        self.labelName10 = tk.Label(parent, text="Cella 10", font="Arial 6",width=5).grid(row = 6, column = 3)
-        self.labelName11 = tk.Label(parent, text="Cella 11", font="Arial 6",width=5).grid(row = 6, column = 4)
-        self.labelName12 = tk.Label(parent, text="Cella 12", font="Arial 6",width=5).grid(row = 6, column = 5)
-        self.labelName13 = tk.Label(parent, text="Cella 13", font="Arial 6",width=5).grid(row = 8, column = 2)
-        self.labelName14 = tk.Label(parent, text="Cella 14", font="Arial 6",width=5).grid(row = 8, column = 3)
-        self.labelName15 = tk.Label(parent, text="Cella 15", font="Arial 6",width=5).grid(row = 8, column = 4)
-        self.labelName16 = tk.Label(parent, text="Cella 16", font="Arial 6",width=5).grid(row = 8, column = 5)
+        self.labelName1 = tk.Label(parent, text="Cella 1", font="Arial 6",width=5, bg='white').grid(row = 2, column = 2)
+        self.labelName2 = tk.Label(parent, text="Cella 2", font="Arial 6",width=5, bg='white').grid(row = 2, column = 3)
+        self.labelName3 = tk.Label(parent, text="Cella 3", font="Arial 6",width=5, bg='white').grid(row = 2, column = 4)
+        self.labelName4 = tk.Label(parent, text="Cella 4", font="Arial 6",width=5, bg='white').grid(row = 2, column = 5)
+        self.labelName5 = tk.Label(parent, text="Cella 5", font="Arial 6",width=5, bg='white').grid(row = 4, column = 2)
+        self.labelName6 = tk.Label(parent, text="Cella 6", font="Arial 6",width=5, bg='white').grid(row = 4, column = 3)
+        self.labelName7 = tk.Label(parent, text="Cella 7", font="Arial 6",width=5, bg='white').grid(row = 4, column = 4)
+        self.labelName8 = tk.Label(parent, text="Cella 8", font="Arial 6",width=5, bg='white').grid(row = 4, column = 5)
+        self.labelName9 = tk.Label(parent, text="Cella 9", font="Arial 6",width=5, bg='white').grid(row = 6, column = 2)
+        self.labelName10 = tk.Label(parent, text="Cella 10", font="Arial 6",width=5, bg='white').grid(row = 6, column = 3)
+        self.labelName11 = tk.Label(parent, text="Cella 11", font="Arial 6",width=5, bg='white').grid(row = 6, column = 4)
+        self.labelName12 = tk.Label(parent, text="Cella 12", font="Arial 6",width=5, bg='white').grid(row = 6, column = 5)
+        self.labelName13 = tk.Label(parent, text="Cella 13", font="Arial 6",width=5, bg='white').grid(row = 8, column = 2)
+        self.labelName14 = tk.Label(parent, text="Cella 14", font="Arial 6",width=5, bg='white').grid(row = 8, column = 3)
+        self.labelName15 = tk.Label(parent, text="Cella 15", font="Arial 6",width=5, bg='white').grid(row = 8, column = 4)
+        self.labelName16 = tk.Label(parent, text="Cella 16", font="Arial 6",width=5, bg='white').grid(row = 8, column = 5)
         
-        self.labelMessage = tk.Label(parent, text="", font="Arial 10", width=10)
+        self.labelMessage = tk.Label(parent, text="", font="Arial 10", width=10, bg='white')
         self.labelMessage.grid(row=10, column=1,sticky = W)
         
         self.labelData1.grid(row=3, column=2,padx=10, pady=10,sticky = W)
@@ -170,9 +172,9 @@ class Reader:
 
         
 
-        self.label4 = tk.Label(parent, text="Status Message:", font="Arial 10",).grid(row=10, column=0)
+        self.label4 = tk.Label(parent, text="Status Message:", font="Arial 10",bg='white').grid(row=10, column=0)
 
-        self.label = tk.Label(parent, text="Ready", font="Arial 14", width= 24)
+        self.label = tk.Label(parent, text="Ready", font="Arial 14", width= 24, bg='white')
         self.label.grid(row = 0, column = 7, padx=10, pady=10,sticky = N)
         #self.label.after(50, self.readSerial)
         
@@ -273,8 +275,8 @@ def start():
         reader.readSerial()   
         
         csvCheckbox.config(state=DISABLED)
-        startButton.config(state=DISABLED)
-        stopButton.config(state=NORMAL)
+        startButton.config(state=DISABLED, bg='grey')
+        stopButton.config(state=NORMAL, bg='#dd2233')
     except Exception as e:
         if(e.__class__.__name__ == 'SerialException'):
             tk.messagebox.showerror(title='Serial error', message='Impossibile collegarsi alla porta ' + port +', assicurarsi di aver scelto la porta COM corretta')
@@ -282,10 +284,10 @@ def start():
             tk.messagebox.showerror(title='Generic error', message='Generic error: ' + e.__class__.__name__)
         settingsMenu.entryconfigure('COM Port',state="normal")
         settingsMenu.entryconfigure('Bauds',state="normal")    
-        stopButton.config(state=DISABLED)
-        startButton.config(state=NORMAL)
+        stopButton.config(state=DISABLED, bg='grey')
+        startButton.config(state=NORMAL, bg='#22aa33')
 
-startButton = tk.Button(root, text = 'Start', command = start, padx=10, pady=5)
+startButton = tk.Button(root, text = 'Start', command = start, padx=10, pady=5, fg='white', bg='#22aa33', borderwidth=0)
 startButton.grid(row=0, column=0, sticky='W', padx=10)
 
 def stop(): 
@@ -316,12 +318,12 @@ def stop():
     csvCheckbox.config(state=NORMAL)
     if(saveOnCsv.get()):
         reader.fileCSV.close()
-    stopButton.config(state=DISABLED)
-    startButton.config(state=NORMAL)
+    stopButton.config(state=DISABLED, bg='grey')
+    startButton.config(state=NORMAL, bg='#22aa33')
     serialPort.__del__()
 
 
-stopButton = tk.Button(root, text = 'Stop', command = stop, padx=10, pady=5)
+stopButton = tk.Button(root, text = 'Stop', command = stop, padx=10, pady=5, fg='white', bg='grey', borderwidth=0, state = DISABLED)
 stopButton.grid(row=1, column=0, sticky='W', padx = 10)
 
 
