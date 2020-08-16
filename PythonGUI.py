@@ -12,154 +12,58 @@ from tkinter import Tk, Menu, RIGHT, BOTH, RAISED, W, E, N, DISABLED, NORMAL, Ca
 
 root = tk.Tk()
 root.title("Real-Time Arduino Uno Serial Data read")
-root.geometry('920x400')
+root.geometry('920x420')
 root.resizable(width=False, height=False)
-
+root.iconbitmap('icon.ico')
 plt.style.use('fivethirtyeight')
 
-port = 'COM3'
-bauds = '9600'
+port = tk.StringVar()
+port.set('COM3')
 
-labelPort = tk.Label(root, text = 'Port: ' + port + '\n' + bauds + ' Bauds')
+bauds = tk.StringVar()
+bauds.set('9600')
+
+labelPort = tk.Label(root, text = 'Port: ' + port.get() + '\n' + bauds.get() + ' Bauds')
 labelPort.grid(row = 11, column = 9, padx = 10, pady = 10)
 
 def updatePort():
-    labelPort.config(text = 'Port: ' + port + '\n' + bauds + ' Bauds')
+    labelPort.config(text = 'Port: ' + port.get() + '\n' + bauds.get() + ' Bauds')
 
 
 menubar = Menu(root)
 root.config(menu=menubar)
 
-settingsMenu = Menu(menubar)
-fileMenu = Menu(menubar)
+settingsMenu = Menu(menubar, tearoff=False)
+fileMenu = Menu(menubar, tearoff=False)
 
-portMenu = Menu(settingsMenu)
-baudsMenu = Menu(settingsMenu)
+portMenu = Menu(settingsMenu, tearoff=False)
+baudsMenu = Menu(settingsMenu, tearoff=False)
 
-def setCom1():
-    global port
-    port='COM1'
-    updatePort()
-def setCom2():
-    global port
-    port='COM2'
-    updatePort()
-def setCom3():
-    global port
-    port='COM3'
-    updatePort()
-def setCom4():
-    global port
-    port='COM4'
-    updatePort()
-def setCom5():
-    global port
-    port='COM5'
-    updatePort()
-def setCom6():
-    global port
-    port='COM6'
-    updatePort()
-def setCom7():
-    global port
-    port='COM7'
-    updatePort()
-def setCom8():
-    global port
-    port='COM8'
-    updatePort()
-def setCom9():
-    global port
-    port='COM9'
-    updatePort()
-def setCom10():
-    global port
-    port='COM10'
-    udpatePort()
-def setCom11():
-    global port
-    port='COM11'
-    udpatePort()
-def setCom12():
-    global port
-    port='COM12'
-    udpatePort()
+portMenu.add_radiobutton(variable=port, label="COM1", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM2", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM3", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM4", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM5", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM6", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM7", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM8", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM9", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM10", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM11", command = updatePort)
+portMenu.add_radiobutton(variable=port, label="COM12", command = updatePort)
 
-
-def setBauds300():
-    global bauds
-    bauds='300'
-    updatePort()
-def setBauds600():
-    global bauds
-    bauds='600'
-    updatePort()
-def setBauds1200():
-    global bauds
-    bauds='1200'
-    updatePort()
-def setBauds2400():
-    global bauds
-    bauds='2400'
-    updatePort()
-def setBauds4800():
-    global bauds
-    bauds='4800'
-    updatePort()
-def setBauds9600():
-    global bauds
-    bauds='9600'
-    updatePort()
-def setBauds14400():
-    global bauds
-    bauds='14400'
-    updatePort()
-def setBauds19200():
-    global bauds
-    bauds='19200'
-    updatePort()
-def setBauds28800():
-    global bauds
-    bauds='28800'
-    updatePort()
-def setBauds38400():
-    global bauds
-    bauds='38400'
-    updatePort()
-def setBauds57600():
-    global bauds
-    bauds='57600'
-    updatePort()
-def setBauds115200():
-    global bauds
-    bauds='115200'
-    updatePort()
-
-portMenu.add_command(label="COM1", command = setCom1)
-portMenu.add_command(label="COM2", command = setCom2)
-portMenu.add_command(label="COM3", command = setCom3)
-portMenu.add_command(label="COM4", command = setCom4)
-portMenu.add_command(label="COM5", command = setCom5)
-portMenu.add_command(label="COM6", command = setCom6)
-portMenu.add_command(label="COM7", command = setCom7)
-portMenu.add_command(label="COM8", command = setCom8)
-portMenu.add_command(label="COM9", command = setCom9)
-portMenu.add_command(label="COM10", command = setCom10)
-portMenu.add_command(label="COM11", command = setCom11)
-portMenu.add_command(label="COM12", command = setCom12)
-
-baudsMenu.add_command(label="300", command = setBauds300)
-baudsMenu.add_command(label="600", command = setBauds600)
-baudsMenu.add_command(label="1200", command = setBauds1200)
-baudsMenu.add_command(label="2400", command = setBauds2400)
-baudsMenu.add_command(label="4800", command = setBauds4800)
-baudsMenu.add_command(label="9600", command = setBauds9600)
-baudsMenu.add_command(label="14400", command = setBauds14400)
-baudsMenu.add_command(label="19200", command = setBauds19200)
-baudsMenu.add_command(label="28800", command = setBauds28800)
-baudsMenu.add_command(label="38400", command = setBauds38400)
-baudsMenu.add_command(label="57600", command = setBauds57600)
-baudsMenu.add_command(label="115200", command = setBauds115200)
+baudsMenu.add_radiobutton(variable=bauds, label="300", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="600", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="1200", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="2400", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="4800", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="9600", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="14400", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="19200", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="28800", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="38400", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="57600", command = updatePort)
+baudsMenu.add_radiobutton(variable=bauds, label="115200", command = updatePort)
 
 
 settingsMenu.add_cascade(label='COM Port', menu=portMenu, underline=0)
@@ -357,7 +261,7 @@ def start():
         settingsMenu.entryconfigure('COM Port',state="disabled")
         settingsMenu.entryconfigure('Bauds',state="disabled")
         global serialPort 
-        serialPort = serial.Serial(port, bauds, timeout=0)
+        serialPort = serial.Serial(port.get(), bauds.get(), timeout=0)
         if(saveOnCsv.get()):
             reader.fileCSV = open('Data.csv', mode = 'w+')
             reader.writer = csv.writer(reader.fileCSV, delimiter = ';')
