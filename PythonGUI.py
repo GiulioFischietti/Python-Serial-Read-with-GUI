@@ -18,6 +18,8 @@ root.resizable(width=False, height=False)
 root.iconbitmap('icon.ico')
 plt.style.use('fivethirtyeight')
 
+showplotvar = False
+
 port = tk.StringVar()
 port.set('COM3')
 
@@ -83,6 +85,12 @@ saveOnCsv = tk.IntVar()
 csvCheckbox = tk.Checkbutton(root, text="Save data in csv \n format in real time", variable=saveOnCsv, bg='white')
 csvCheckbox.grid(row = 11, column = 0, padx = 20, pady = 10)
 
+def showplot():
+    global showplotvar
+    showplotvar = True
+
+showPlotButton = tk.Button(root, text='Show Plot', command=showplot, bg='#bb1', fg='white', borderwidth=0, padx=10, pady=5)
+showPlotButton.grid(row=11, column=1)
 w = Canvas(root, width=30, height=30, bg='white', highlightthickness=0)
 w.grid(row = 11, column = 10)
 circle = w.create_oval(10, 10, 25, 25, outline="#A12", fill="#A12", width=2)
@@ -177,19 +185,22 @@ class Reader:
         self.label = tk.Label(parent, text="Ready", font="Arial 14", width= 24, bg='white')
         self.label.grid(row = 0, column = 7, padx=10, pady=10,sticky = N)
         #self.label.after(50, self.readSerial)
-        
-        self.fileCSV = open('Data.csv', mode = 'w+')
-        self.writer = csv.writer(self.fileCSV, delimiter = ';')
+        if(saveOnCsv.get()):
+            self.fileCSV = open('Data.csv', mode = 'w+')
+            self.writer = csv.writer(self.fileCSV, delimiter = ';')
 
     def readSerial(self):
         """ refresh the content of the label every second """
         # increment the time
+        # w.itemconfig(circle, outline="#1A2", fill="#1A2")
         if(serialPort.is_open):   
             self.data = str(serialPort.readline()).replace("'","").replace("b","").replace("\\n", "").replace("\\r", "").split(';')
 
-            if(len(self.data)==17):
-                print(self.data)
-                w.itemconfig(circle, outline="#1A2", fill="#1A2")
+            print(self.data)
+            if(len(self.data)==17 and all(n.isnumeric() for n in self.data[0:16])):
+                
+                
+               
                 # display the new time
                 self.counter = self.counter + 1
                 self.time.append(self.counter)
@@ -237,10 +248,11 @@ class Reader:
                 
                 if(saveOnCsv.get()):
                     self.writer.writerow(self.data)
-                self.animate()
+                if(showplotvar):
+                    self.animate()
                     
-            # request tkinter to call self.refresh after 1s (the delay is given in ms)
-            self.label.after(50, self.readSerial)
+            # request tkinter to call self.refresh after 51ms (the delay is given in ms)
+            self.label.after(100, self.readSerial)
             # fig.plot(self.data1, self.data2, self.data3)
 
 
@@ -250,7 +262,7 @@ class Reader:
         plt.plot(self.time, self.data2, label='Channel 2')
         plt.plot(self.time, self.data3, label='Channel 3')
         plt.draw()
-        plt.pause(0.001)
+        plt.pause(0.002)
         plt.tight_layout()
     
     ani = FuncAnimation(plt.gcf(), animate, interval=100)
@@ -259,11 +271,12 @@ class Reader:
 
 
 def start():
+   
     try:
         settingsMenu.entryconfigure('COM Port',state="disabled")
         settingsMenu.entryconfigure('Bauds',state="disabled")
         global serialPort 
-        serialPort = serial.Serial(port.get(), bauds.get(), timeout=0)
+        serialPort = serial.Serial(port.get(), bauds.get(), timeout=None)
         if(saveOnCsv.get()):
             reader.fileCSV = open('Data.csv', mode = 'w+')
             reader.writer = csv.writer(reader.fileCSV, delimiter = ';')
@@ -279,14 +292,14 @@ def start():
         stopButton.config(state=NORMAL, bg='#dd2233')
     except Exception as e:
         if(e.__class__.__name__ == 'SerialException'):
-            tk.messagebox.showerror(title='Serial error', message='Impossibile collegarsi alla porta ' + port +', assicurarsi di aver scelto la porta COM corretta')
-        else:
-            tk.messagebox.showerror(title='Generic error', message='Generic error: ' + e.__class__.__name__)
+            tk.messagebox.showerror(title='Serial error', message='Impossibile collegarsi alla porta ' + port.get() +', assicurarsi di aver scelto la porta COM corretta')
+        # else:
+        #     tk.messagebox.showerror(title='Generic error', message='Generic error: ' + e.__class__.__name__)
         settingsMenu.entryconfigure('COM Port',state="normal")
         settingsMenu.entryconfigure('Bauds',state="normal")    
         stopButton.config(state=DISABLED, bg='grey')
         startButton.config(state=NORMAL, bg='#22aa33')
-
+    w.itemconfig(circle, outline="#1A2", fill="#1A2")
 startButton = tk.Button(root, text = 'Start', command = start, padx=10, pady=5, fg='white', bg='#22aa33', borderwidth=0)
 startButton.grid(row=0, column=0, sticky='W', padx=10)
 
