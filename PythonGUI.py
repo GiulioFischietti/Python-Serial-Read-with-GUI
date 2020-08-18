@@ -12,7 +12,7 @@ from tkinter import Tk, Menu, RIGHT, BOTH, RAISED, W, E, N, DISABLED, NORMAL, Ca
 
 root = tk.Tk()
 root.title("Real-Time Arduino Uno Serial Data read")
-root.geometry('920x420')
+root.geometry('820x340')
 root.configure(bg='white')
 root.resizable(width=False, height=False)
 root.iconbitmap('icon.ico')
@@ -32,14 +32,11 @@ labelPort.grid(row = 11, column = 9, padx = 10, pady = 10)
 def updatePort():
     labelPort.config(text = 'Port: ' + port.get() + '\n' + bauds.get() + ' Bauds')
 
-
 menubar = Menu(root, background='white')
 menubar.config(bg='white')
 root.config(menu=menubar)
-
 settingsMenu = Menu(menubar, tearoff=False)
 fileMenu = Menu(menubar, tearoff=False)
-
 portMenu = Menu(settingsMenu, tearoff=False)
 baudsMenu = Menu(settingsMenu, tearoff=False)
 
@@ -59,7 +56,6 @@ baudsMenu.add_radiobutton(variable=bauds, label="38400", command = updatePort)
 baudsMenu.add_radiobutton(variable=bauds, label="57600", command = updatePort)
 baudsMenu.add_radiobutton(variable=bauds, label="115200", command = updatePort)
 
-
 settingsMenu.add_cascade(label='COM Port', menu=portMenu, underline=0)
 settingsMenu.add_cascade(label='Bauds', menu=baudsMenu, underline=0)
 
@@ -70,13 +66,17 @@ def exitApp():
     exit()
 
 fileMenu.add_command(label = 'Exit', command= exitApp)
-
 saveOnCsv = tk.IntVar()
-
 
 def showplot():
     global showplotvar
-    showplotvar = True
+    if(not showplotvar):
+        showplotvar = True
+        showPlotButton.config(text='Hide plot')
+    else:
+        showplotvar = False 
+        showPlotButton.config(text='Show plot')
+        plt.close()
 
 showPlotButton = tk.Button(root, text='Show Plot', command=showplot, bg='#bb1', fg='white', borderwidth=0, padx=10, pady=5)
 showPlotButton.grid(row=11, column=1)
@@ -84,20 +84,14 @@ w = Canvas(root, width=30, height=30, bg='white', highlightthickness=0)
 w.grid(row = 11, column = 10)
 circle = w.create_oval(10, 10, 25, 25, outline="#A12", fill="#A12", width=2)
 
-
-
 class Reader:
     def __init__(self, parent):
         # variable storing time
         self.data = []
-        
         self.time = []
         self.counter = 0
-
         self.dataCells = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]
-
         self.message = []
-
         self.labelDataCells = []
         self.labelNameCells = []
         
@@ -121,7 +115,6 @@ class Reader:
             self.labelDataCells[i].grid(row = j+1, column = ((i+4)%4+2))
 
         self.label4 = tk.Label(parent, text="Status Message:", font="Arial 10",bg='white').grid(row=10, column=0)
-
         self.label = tk.Label(parent, text="Ready", font="Arial 14", width= 24, bg='white')
         self.label.grid(row = 0, column = 7, padx=10, pady=10,sticky = N)
         #self.label.after(50, self.readSerial)
@@ -136,28 +129,22 @@ class Reader:
         if(serialPort.is_open):   
             self.data = str(serialPort.readline()).replace("'","").replace("b","").replace("\\n", "").replace("\\r", "").split(';')
 
-            
             if(len(self.data)==17 and all(n.isnumeric() for n in self.data[0:16])):
-                
-                
-               
                 # display the new time
+                w.itemconfig(circle, outline="#1A2", fill="#1A2")
                 self.counter = self.counter + 1
                 self.time.append(self.counter)
 
                 for i in range(16):
                     self.dataCells[i].append(float(self.data[i]))
                 
-                self.message.append(self.data[16])
-                
-                
+                self.message.append(self.data[16])    
                 self.label.configure(text= "Reading data from Arduino...")
                 
                 for i in range(16):
                     self.labelDataCells[i].configure(text=self.data[i])
 
                 self.labelMessage.configure(text= self.data[16])
-                
                 if(saveOnCsv.get()):
                     self.writer.writerow(self.data)
                 if(showplotvar):
@@ -167,18 +154,16 @@ class Reader:
             self.label.after(100, self.readSerial)
             # fig.plot(self.data1, self.data2, self.data3)
 
-
     def animate(self):
         plt.cla()
         plt.plot(self.time, self.dataCells[0], label='Channel 1')
         plt.plot(self.time, self.dataCells[1], label='Channel 2')
         plt.plot(self.time, self.dataCells[2], label='Channel 3')
         plt.draw()
-        plt.pause(0.002)
+        plt.pause(0.001)
         plt.tight_layout()
     
     ani = FuncAnimation(plt.gcf(), animate, interval=100)
-
 #end class
 
 csvCheckbox = tk.Checkbutton(root, text="Save data in csv \n format in real time", variable=saveOnCsv, bg='white')
@@ -187,6 +172,8 @@ csvCheckbox.grid(row = 11, column = 0, padx = 20, pady = 10)
 def start():
    
     try:
+        reader.label.configure(text = 'Restarting...')
+        w.itemconfig(circle, outline="#DD2",fill="#DD2")
         settingsMenu.entryconfigure('COM Port',state="disabled")
         settingsMenu.entryconfigure('Bauds',state="disabled")
         global serialPort 
@@ -195,10 +182,10 @@ def start():
             reader.fileCSV = open('Data.csv', mode = 'w+')
             reader.writer = csv.writer(reader.fileCSV, delimiter = ';')
         if(serialPort.is_open is not True):
+            
             serialPort.open()
             
-        reader.label.configure(text = 'Restarting...')
-        w.itemconfig(circle, outline="#DD2",fill="#DD2")
+        
         reader.readSerial()   
         
         csvCheckbox.config(state=DISABLED)
@@ -213,7 +200,7 @@ def start():
         settingsMenu.entryconfigure('Bauds',state="normal")    
         stopButton.config(state=DISABLED, bg='grey')
         startButton.config(state=NORMAL, bg='#22aa33')
-    w.itemconfig(circle, outline="#1A2", fill="#1A2")
+    
 startButton = tk.Button(root, text = 'Start', command = start, padx=10, pady=5, fg='white', bg='#22aa33', borderwidth=0)
 startButton.grid(row=0, column=0, sticky='W', padx=10)
 
