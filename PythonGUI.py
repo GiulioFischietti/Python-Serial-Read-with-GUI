@@ -12,7 +12,7 @@ from tkinter import Tk, Menu, RIGHT, BOTH, RAISED, W, E, N, DISABLED, NORMAL, Ca
 
 root = tk.Tk()
 root.title("Real-Time Arduino Uno Serial Data read")
-root.geometry('820x340')
+root.geometry('1080x340')
 root.configure(bg='white')
 root.resizable(width=False, height=False)
 root.iconbitmap('icon.ico')
@@ -94,6 +94,7 @@ class Reader:
         self.message = []
         self.labelDataCells = []
         self.labelNameCells = []
+        # Tempo;Messaggio;cella 0;cella 1;cella 2;cella 3;cella 4;cella 5;cella 6;cella 7;cella 8;cella 9;cella 10;cella 11;cella 12;cella 13;cella 14;cella 15;ntc 0;
         
         for i in range(16):
             self.labelDataCells.append(tk.Label(parent, text="", font="Arial 10",width=4, bg = 'white'))
@@ -105,14 +106,14 @@ class Reader:
             self.labelNameCells.append(tk.Label(parent, text=("Cella " + str(i+1)), font="Arial 6",width=5, bg='white').grid(row = k, column = ((i+4)%4+2)))
            
         
-        self.labelMessage = tk.Label(parent, text="", font="Arial 10", width=10, bg='white')
+        self.labelMessage = tk.Label(parent, text="", font="Arial 10", width=20, bg='white')
         self.labelMessage.grid(row=10, column=1,sticky = W)
         
         j = 0
         for i in range(16):
             if((i+4)%4==0):
                 j += 2
-            self.labelDataCells[i].grid(row = j+1, column = ((i+4)%4+2))
+            self.labelDataCells[i].grid(row = j+1, column = ((i+4)%4+2), padx = 20)
 
         self.label4 = tk.Label(parent, text="Status Message:", font="Arial 10",bg='white').grid(row=10, column=0)
         self.label = tk.Label(parent, text="Ready", font="Arial 14", width= 24, bg='white')
@@ -123,54 +124,53 @@ class Reader:
             self.writer = csv.writer(self.fileCSV, delimiter = ';')
 
     def readSerial(self):
+        
         """ refresh the content of the label every second """
         # increment the time
         # w.itemconfig(circle, outline="#1A2", fill="#1A2")
         if(serialPort.is_open):   
             self.data = str(serialPort.readline()).replace("'","").replace("b","").replace("\\n", "").replace("\\r", "").split(';')
-
-            if(len(self.data)==17 and all(n.isnumeric() for n in self.data[0:16])):
-                # display the new time
+            print(self.data)
+            
+            if(len(self.data)==20  and self.data[2]!='cella 0'):
                 w.itemconfig(circle, outline="#1A2", fill="#1A2")
-                self.counter = self.counter + 1
-                self.time.append(self.counter)
-
-                for i in range(16):
-                    self.dataCells[i].append(float(self.data[i]))
                 
-                self.message.append(self.data[16])    
+                for i in range(2, 18):
+                    self.dataCells[i-2].append(float(self.data[i]))
+                self.message.append(self.data[1])    
                 self.label.configure(text= "Reading data from Arduino...")
                 
                 for i in range(16):
-                    self.labelDataCells[i].configure(text=self.data[i])
+                    self.labelDataCells[i].configure(text=self.data[i+2])
+                self.time.append(float(self.data[0]))
 
-                self.labelMessage.configure(text= self.data[16])
+                self.labelMessage.configure(text= self.data[1])
                 if(saveOnCsv.get()):
                     self.writer.writerow(self.data)
                 if(showplotvar):
                     self.animate()
-                    
-            # request tkinter to call self.refresh after 51ms (the delay is given in ms)
-            self.label.after(100, self.readSerial)
-            # fig.plot(self.data1, self.data2, self.data3)
-
+                        
+                # request tkinter to call self.refresh after 51ms (the delay is given in ms)
+            self.label.after(1000, self.readSerial)
+                # fig.plot(self.data1, self.data2, self.data3)
+            # self.counter = self.counter + 1
+            
     def animate(self):
         plt.cla()
-        plt.plot(self.time, self.dataCells[0], label='Channel 1')
-        plt.plot(self.time, self.dataCells[1], label='Channel 2')
-        plt.plot(self.time, self.dataCells[2], label='Channel 3')
+        plt.plot(self.time, self.dataCells[0], label = 'Channel 1')
+        plt.plot(self.time, self.dataCells[2], label = 'Channel 2')
+        plt.plot(self.time, self.dataCells[3], label = 'Channel 3')
         plt.draw()
         plt.pause(0.001)
         plt.tight_layout()
     
-    ani = FuncAnimation(plt.gcf(), animate, interval=100)
+    ani = FuncAnimation(plt.gcf(), animate, interval=1000)
 #end class
 
 csvCheckbox = tk.Checkbutton(root, text="Save data in csv \n format in real time", variable=saveOnCsv, bg='white')
 csvCheckbox.grid(row = 11, column = 0, padx = 20, pady = 10)
 
 def start():
-   
     try:
         reader.label.configure(text = 'Restarting...')
         w.itemconfig(circle, outline="#DD2",fill="#DD2")
